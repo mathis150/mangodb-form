@@ -58,13 +58,29 @@
                         </div>
                     </div>
 
-                    <div class="rounded-md shadow-md" id="f1">
+                    <div class="rounded-md shadow-md mb-10" id="f1">
                         <div class="bg-indigo-500 h-2 rounded-md"></div>
                         <div class="p-4">
                             Question n°1
-                            <div class="mt-2">
-                                <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                    <input type="text" name="username" id="username" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                            <div class="mt-2 flex">
+                                <div class="flex flex-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                    <input type="text" name="title[1]" id="1" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                </div>
+                                <div class="flex flex-1 ml-5 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                    <select name="type[1]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                        <option value="text">Texte</option>
+                                        <option value="textarea">Zone de texte</option>
+                                        <option value="number">Nombre</option>
+                                        <option value="date">Date</option>
+                                        <option value="time">Heure</option>
+                                        <option value="email">Email</option>
+                                        <option value="tel">Téléphone</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-1 ml-5 justify-end">
+                                    <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onclick="addLine()">Ajouter une ligne</button>
+
+                                    <button type="button" class="rounded-md bg-red-200  ml-2 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" disabled>Supprimer la ligne</button>
                                 </div>
                             </div>
                         </div>
@@ -77,6 +93,52 @@
                 </form>
             </div>
         </div>
+
+        <script>
+            let total = 1;
+            function addLine(){
+                total++;
+                let newDiv = document.createElement("div");
+                newDiv.classList.add("rounded-md", "shadow-md", "mb-10");
+                newDiv.id = "f" + total;
+                newDiv.innerHTML = `
+                    <div class="bg-indigo-500 h-2 rounded-md"></div>
+                    <div class="p-4">
+                        Question n°${total}
+                        <div class="mt-2 flex">
+                            <div class="flex flex-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                <input type="text" name="title[`+ total +`]" id="`+ total +`" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                            </div>
+                            <div class="flex flex-1 ml-5 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                                <select name="type[`+ total +`]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                    <option value="text" selected>Texte</option>
+                                    <option value="textarea">Zone de texte</option>
+                                    <option value="number">Nombre</option>
+                                    <option value="date">Date</option>
+                                    <option value="time">Heure</option>
+                                    <option value="email">Email</option>
+                                    <option value="tel">Téléphone</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-1 ml-5 justify-end">
+                                <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onclick="addLine()">Ajouter une ligne</button>
+
+                                <button type="button" class="rounded-md bg-red-600  ml-2 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onclick="deleteLine(`+ total +`)">Supprimer la ligne</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById("f" + (total - 1)).insertAdjacentElement("afterend", newDiv);
+            }
+
+            function deleteLine(id){
+                for(let i = id; i < total; i++){
+                    document.getElementById(i).value = document.getElementById(i + 1).value;
+                }
+                document.getElementById("f" + total).remove();
+                total--;
+            }
+        </script>
     <?php
     $basePage->footer("private");
 
