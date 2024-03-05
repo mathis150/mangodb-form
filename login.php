@@ -14,7 +14,6 @@
         if(!empty($_POST['email']) and !empty($_POST['password'])){
             $session = $user->loginUser($_POST['email'], $_POST['password']);
             if($session != false) {
-                echo "test";
                 setcookie("session", $session, time()+2678400, "/");
                 header("Location: client.php");
             }

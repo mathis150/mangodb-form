@@ -2,10 +2,28 @@
 
     require_once("php/base.php");
     $basePage = new webBase();
+    
+    require_once("php/user.php");
+    $user = new UserController();
+    
+    require_once("php/forms.php");
+    $forms = new FormsController();
+
+    if(isset($_COOKIE['session']))
+        $user->isSessionExist($_COOKIE['session'], "index.php", false);
+
+    if(isset($_POST['submit'])) {
+        echo "test";
+        var_dump($_POST);
+        var_dump($_FILES);
+        if(!empty($_POST['title'])){
+            $forms->createForms($_POST['title'], $_FILES['file-upload'], $_POST['questions'], $_COOKIE['session'], (!empty($_POST['about']) ? $_POST['about'] : ""));
+        }
+    }
 
 
     $basePage->header("Accueil");
-    $basePage->navBar("private");
+    //$basePage->navBar("private");
     ?>
         <?php
             if(!isset($_GET['action'])){
@@ -16,15 +34,15 @@
         ?>
         <div class="p-4 sm:ml-64">
             <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-                <form>
+                <form method="POST" action="#" enctype="multipart/form-data">
                     <div class="space-y-12">
                         <div class="border-b border-gray-900/10 pb-12">
                             <div class="mt-10" style="width: 80%; margin-left: 10%;">
                                 <div class="w-full">
-                                    <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Titre du formulaire</label>
+                                    <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Titre du formulaire</label>
                                     <div class="mt-2">
                                         <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                            <input type="text" name="username" id="username" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                            <input type="text" name="title" id="title" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
                                         </div>
                                     </div>
                                 </div>
@@ -32,7 +50,7 @@
                                 <div class="col-span-full mt-5">
                                     <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
                                     <div class="mt-2">
-                                        <textarea id="about" name="about" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                                        <textarea id="about" name="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
                                     </div>
                                 </div>
 
@@ -64,10 +82,10 @@
                             Question n°1
                             <div class="mt-2 flex">
                                 <div class="flex flex-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                    <input type="text" name="title[1]" id="1" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                    <input type="text" name="questions[title][1]" id="1" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
                                 </div>
                                 <div class="flex flex-1 ml-5 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                    <select name="type[1]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                    <select name="questions[type][1]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
                                         <option value="text">Texte</option>
                                         <option value="textarea">Zone de texte</option>
                                         <option value="number">Nombre</option>
@@ -88,7 +106,7 @@
 
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-                        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                        <button type="submit" name="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
                     </div>
                 </form>
             </div>
@@ -107,10 +125,10 @@
                         Question n°${total}
                         <div class="mt-2 flex">
                             <div class="flex flex-1 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                <input type="text" name="title[`+ total +`]" id="`+ total +`" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                <input type="text" name="questions[title][`+ total +`]" id="`+ total +`" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
                             </div>
                             <div class="flex flex-1 ml-5 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                <select name="type[`+ total +`]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
+                                <select name="questions[type][`+ total +`]" class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6">
                                     <option value="text" selected>Texte</option>
                                     <option value="textarea">Zone de texte</option>
                                     <option value="number">Nombre</option>
