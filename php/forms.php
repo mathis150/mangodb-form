@@ -1,8 +1,8 @@
-use MongoDB\BSON\ObjectId;
 <?php
 
     require_once(__DIR__."/database.php");
     require_once(__DIR__."/env.php");
+    require("composer/vendor/autoload.php");
 
     class FormsController {
         private $db;
@@ -33,7 +33,7 @@ use MongoDB\BSON\ObjectId;
             return $forms;
         }
         public function getFormByID($id) {
-            $forms = $this->collection_forms->findOne(['_id' => new ObjectId($id)]);
+            $forms = $this->collection_forms->findOne(['uuid' => $id]);
 
             return $forms;
         }
@@ -50,11 +50,37 @@ use MongoDB\BSON\ObjectId;
             }
 
             $this->collection_forms->insertOne([
+                'uuid' => $this->db->generateUUID(),
                 'title' => $title,
                 'description' => $description,
                 'presentation' => $name,
                 'questions' => $questions,
                 'user' => $user['user_id']
+            ]);
+
+            header('Location: forms.php');
+        }
+        public function updateForms($uuid, $title, $presentation, $questions, $description="") {
+            $name = "";
+
+            if(is_array($presentation)) {
+                $name = $this->db->generateUUID().".".strtolower(substr(strrchr($presentation['name'], '.'), 1));
+                $chemin = "./imgs/".$name;
+                
+                move_uploaded_file($presentation['tmp_name'], $chemin);
+            }
+            else {
+                $name = $presentation;
+            }
+
+            $this->collection_forms->updateOne(
+                [ 'uuid' => $uuid ],
+                [ '$set' => [
+                    'title' => $title,
+                    'description' => $description,
+                    'presentation' => $name,
+                    'questions' => $questions,
+                ]
             ]);
 
             header('Location: forms.php');

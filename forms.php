@@ -6,6 +6,14 @@
     require_once("php/forms.php");
     $formPage = new FormsController();
 
+    $valReq = $formPage->getForms();
+
+    $val = array();
+
+    foreach($valReq as $key => $values)
+    {
+        $val[] = $values;
+    }
 
     $basePage->header("Accueil");
     $basePage->navBar("private");
@@ -16,8 +24,8 @@
                 <div class="grid grid-cols-3 gap-4 mb-4">
                     <div class="flex items-center justify-center h-24 rounded bg-white border-2 border-gray-200">
                         <div class="text-center">
-                            <h6 class="text-3xl font-bold text-deep-purple-accent-400">29/30</h6>
-                            <p>Formulaires créé (<span class="text-green-600 font-bold">+8%</span>)</p>
+                            <h6 class="text-3xl font-bold text-deep-purple-accent-400"><?php echo count($val);?>/30</h6>
+                            <p>Formulaires créé</p>
                             <cite>Devenez <a href="client_pricing.php"><u>Pro</u></a> et n'ayez plus de limite !</cite>
                         </div>
                     </div>
@@ -60,28 +68,25 @@
                         </thead>
                         <tbody>
                             <?php
-
-                                $val = $formPage->getForms();
-
                                 foreach($val as $key => $values)
                                 {
                                 ?>
                                     <tr class="bg-white border-b hover:bg-gray-50">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                            <?php echo $values["_id"]; ?>
+                                            <?php echo $values["uuid"]; ?>
                                         </th>
                                         <td class="px-6 py-4">
                                             <?php echo $values["title"]; ?>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <?php echo count($values["questions"]); ?>
+                                            <?php echo count($values["questions"]['title']); ?>
                                         </td>
                                         <td class="px-6 py-4">
                                             0 vues
                                         </td>
                                         <td class="px-6 py-4">
-                                            <a href="forms_actions.php?id=<?php echo $values["_id"]; ?>&action=edit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a><br>
-                                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Voir</a>
+                                            <a href="forms_actions.php?id=<?php echo $values["uuid"]; ?>&action=edit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a><br>
+                                            <a href="views.php?id=<?php echo $values["uuid"]; ?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Voir</a>
                                         </td>
                                     </tr>
                                 <?php

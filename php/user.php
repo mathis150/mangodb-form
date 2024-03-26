@@ -55,7 +55,6 @@
             $session = $this->collection_session->findOne(['session_token' => $session]);
 
             if($session != null) {
-                echo "test";
                 if($session['date'] > time()) {
                     if(!empty($goto) and $valid)
                         header("Location: $goto");
