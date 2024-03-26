@@ -1,3 +1,4 @@
+use MongoDB\BSON\ObjectId;
 <?php
 
     require_once(__DIR__."/database.php");
@@ -23,6 +24,18 @@
             unset($this->collection_users);
             unset($this->collection_session);
             unset($this->collection_forms);
+        }
+
+        public function getForms() {
+            $user = $this->collection_sessions->findOne(['session_token' => $_COOKIE['session']]);
+            $forms = $this->collection_forms->find(['user' => $user['user_id']]);
+
+            return $forms;
+        }
+        public function getFormByID($id) {
+            $forms = $this->collection_forms->findOne(['_id' => new ObjectId($id)]);
+
+            return $forms;
         }
 
         public function createForms($title, $presentation, $questions, $session, $description="") {

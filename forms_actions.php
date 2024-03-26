@@ -11,19 +11,25 @@
 
     if(isset($_COOKIE['session']))
         $user->isSessionExist($_COOKIE['session'], "index.php", false);
+    
+    if(!empty($_GET['action']) or $_GET['action'] == "edit")
+    {
+        $form = $forms->getFormByID($_GET['id']);
+        var_dump($form);
+    }
 
     if(isset($_POST['submit'])) {
-        echo "test";
-        var_dump($_POST);
-        var_dump($_FILES);
-        if(!empty($_POST['title'])){
-            $forms->createForms($_POST['title'], $_FILES['file-upload'], $_POST['questions'], $_COOKIE['session'], (!empty($_POST['about']) ? $_POST['about'] : ""));
+        if(empty($_GET['action']) or $_GET['action'] == "create")
+        {
+            if(!empty($_POST['title'])){
+                $forms->createForms($_POST['title'], $_FILES['file-upload'], $_POST['questions'], $_COOKIE['session'], (!empty($_POST['about']) ? $_POST['about'] : ""));
+            }
         }
     }
 
 
     $basePage->header("Accueil");
-    //$basePage->navBar("private");
+    $basePage->navBar("private");
     ?>
         <?php
             if(!isset($_GET['action'])){
